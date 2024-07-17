@@ -1,0 +1,8 @@
+This Cloudformation template is used to create a vpc with one private and one public subnet.
+
+vpc cidr block - 10.0.0.0/27
+
+private subnet - 10.0.0.0/28
+public subnet - 10.0.0.16/28
+
+public subnet attached to internet gateway, if we create instance in public subnet we can install required softwares from internet.
