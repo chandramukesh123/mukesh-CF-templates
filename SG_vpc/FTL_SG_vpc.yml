@@ -1,0 +1,372 @@
+Resources:
+
+#vpc creation with the given Cidr Block 
+   IntegreatVPC:
+     Type: AWS::EC2::VPC
+     Properties:
+       CidrBlock: 172.17.27.0/24
+       EnableDnsSupport: 'true'
+       EnableDnsHostnames: 'true'
+       InstanceTenancy: default
+       Tags:
+        - Key: Name
+          Value: VPC-perfios-27
+ 
+#Public and private Subnets creation in the VPC  
+   subnetperfios27publica:
+     Type: AWS::EC2::Subnet
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       CidrBlock: 172.17.27.0/28
+       AvailabilityZone: "ap-southeast-1a"
+       Tags:
+       - Key: Name
+         Value: subnet-perfios-27-public-a
+       MapPublicIpOnLaunch: true 
+
+
+   subnetGWperfios27publica:
+     Type: AWS::EC2::Subnet
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       CidrBlock: 172.17.27.16/28
+       AvailabilityZone: "ap-southeast-1a"
+       Tags:
+       - Key: Name
+         Value: subnet-GW-perfios-27-public-a
+       MapPublicIpOnLaunch: true
+
+
+   subnetwebperfios27privatea:
+     Type: AWS::EC2::Subnet
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       CidrBlock: 172.17.27.32/27
+       AvailabilityZone: "ap-southeast-1a"
+       Tags:
+       - Key: Name
+         Value: subnet-web-perfios-27-private-a
+       MapPublicIpOnLaunch: false
+
+   
+   subnetappperfios27privatea:
+     Type: AWS::EC2::Subnet
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       CidrBlock: 172.17.27.64/27
+       AvailabilityZone: "ap-southeast-1a"
+       Tags:
+       - Key: Name
+         Value: subnet-app-perfios-27-private-a 
+       MapPublicIpOnLaunch: false
+       
+     
+   subnetdbperfios27privatea:
+     Type: AWS::EC2::Subnet
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       CidrBlock: 172.17.27.96/28
+       AvailabilityZone: "ap-southeast-1a"
+       Tags:
+       - Key: Name
+         Value: subnet-db-perfios-27-private-a 
+       MapPublicIpOnLaunch: false
+
+    
+   subnetnosqlperfios27privatea:
+     Type: AWS::EC2::Subnet
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       CidrBlock: 172.17.27.112/28
+       AvailabilityZone: "ap-southeast-1a"
+       Tags:
+       - Key: Name
+         Value: subnet-nosql-perfios-27-private-a
+       MapPublicIpOnLaunch: false 
+       
+ 
+    
+   subnetperfios27publicb:
+     Type: AWS::EC2::Subnet
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       CidrBlock: 172.17.27.128/28
+       AvailabilityZone: "ap-southeast-1b"
+       Tags:
+       - Key: Name
+         Value: subnet-perfios-27-public-b 
+       MapPublicIpOnLaunch: true 
+
+    
+   subnetGWperfios27publicb:
+     Type: AWS::EC2::Subnet
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       CidrBlock: 172.17.27.144/28
+       AvailabilityZone: "ap-southeast-1b"
+       Tags:
+       - Key: Name
+         Value: subnet-GW-perfios-27-public-b 
+       MapPublicIpOnLaunch: true 
+ 
+
+          
+   subnetwebperfios27privateb:
+     Type: AWS::EC2::Subnet
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       CidrBlock: 172.17.27.160/27
+       AvailabilityZone: "ap-southeast-1b"
+       Tags:
+       - Key: Name
+         Value: subnet-web-perfios-27-private-b 
+       MapPublicIpOnLaunch: false 
+       
+
+   subnetappperfios27privateb:
+     Type: AWS::EC2::Subnet
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       CidrBlock: 172.17.27.192/27
+       AvailabilityZone: "ap-southeast-1b"
+       Tags:
+       - Key: Name
+         Value: subnet-app-perfios-27-private-b 
+       MapPublicIpOnLaunch: false 
+  
+
+   subnetdbperfios27privateb:
+     Type: AWS::EC2::Subnet
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       CidrBlock: 172.17.27.224/28
+       AvailabilityZone: "ap-southeast-1b"
+       Tags:
+       - Key: Name
+         Value: subnet-db-perfios-27-private-b
+       MapPublicIpOnLaunch: false 
+
+
+   subnetnosqlperfios27privateb:
+     Type: AWS::EC2::Subnet
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       CidrBlock: 172.17.27.240/28
+       AvailabilityZone: "ap-southeast-1b"
+       Tags:
+       - Key: Name
+         Value: subnet-nosql-perfios-27-private-b 
+       MapPublicIpOnLaunch: false 
+
+
+#Creating Internet Gateway and attaching to VPC
+   InternetGateway:
+     Type: AWS::EC2::InternetGateway
+     Properties:
+       Tags:
+       - Key: Name
+         Value: internet-gateway-perfios-27
+   AttachGateway:
+     Type: AWS::EC2::VPCGatewayAttachment
+    # Notice how you can't attach an IGW to a VPC unless both are created:
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       InternetGatewayId: 
+         Ref: InternetGateway
+
+
+#Creating Public Routetable
+   PublicRouteTable:
+     Type: AWS::EC2::RouteTable
+     Properties:
+       VpcId:
+         Ref: IntegreatVPC
+       Tags:
+       - Key: Name
+         Value: route-table-perfios-27-public
+
+
+   PublicRouteIgw:   # Public route table has direct routing to IGW:
+     Type: AWS::EC2::Route
+     Properties:
+       RouteTableId:
+         Ref: PublicRouteTable
+       DestinationCidrBlock: 0.0.0.0/0
+       GatewayId:
+          Ref: InternetGateway 
+
+  
+#Creating Elastic Ip 
+   ElasticIPAddress:
+     Type: AWS::EC2::EIP
+     Properties:
+       Domain: IntegreatVPC 
+       Tags:
+       - Key: Name
+         Value: eip-perfios-27
+
+
+#Creating NAT Gateway
+   NATGateway:
+     Type: AWS::EC2::NatGateway
+     Properties:
+       AllocationId: !GetAtt ElasticIPAddress.AllocationId
+       SubnetId:
+         Ref: subnetGWperfios27publica 
+       Tags:
+        - Key: Name
+          Value: NAT-Gateway-perfios-27
+
+
+#Creating Private Routetable
+   PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: IntegreatVPC
+      Tags:
+       - Key: Name
+         Value: route-table-perfios-27-private 
+
+
+   PrivateRouteNAT:            # Private route table can access web via NAT (created below)
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      # Route traffic through the NAT Gateway:
+      NatGatewayId:
+        Ref: NATGateway
+
+
+
+#Associating subnets to routetables
+   subnetperfios27publicaRouteTableAssociation:
+     Type: AWS::EC2::SubnetRouteTableAssociation
+     Properties:
+       SubnetId:
+         Ref: subnetperfios27publica
+       RouteTableId:
+         Ref: PublicRouteTable
+
+
+   subnetGWperfios27publicaRouteTableAssociation:
+     Type: AWS::EC2::SubnetRouteTableAssociation
+     Properties:
+      SubnetId:
+        Ref: subnetGWperfios27publica
+      RouteTableId: 
+        Ref: PublicRouteTable
+
+
+   subnetwebperfios27privateaRouteTableAssociation:
+     Type: AWS::EC2::SubnetRouteTableAssociation
+     Properties:
+       SubnetId: 
+         Ref: subnetwebperfios27privatea
+       RouteTableId:
+         Ref: PrivateRouteTable
+
+
+   subnetappperfios27privateaRouteTableAssociation:
+     Type: AWS::EC2::SubnetRouteTableAssociation
+     Properties:
+       SubnetId:
+         Ref: subnetappperfios27privatea
+       RouteTableId: 
+         Ref: PrivateRouteTable
+
+   
+   subnetdbperfios27privateaRouteTableAssociation:
+     Type: AWS::EC2::SubnetRouteTableAssociation
+     Properties:
+       SubnetId:
+         Ref: subnetdbperfios27privatea
+       RouteTableId: 
+         Ref: PrivateRouteTable
+  
+
+   subnetnosqlperfios27privateaRouteTableAssociation:
+     Type: AWS::EC2::SubnetRouteTableAssociation
+     Properties:
+       SubnetId:
+         Ref: subnetnosqlperfios27privatea
+       RouteTableId: 
+         Ref: PrivateRouteTable
+
+
+   
+   subnetperfios27publicbRouteTableAssociation:
+     Type: AWS::EC2::SubnetRouteTableAssociation
+     Properties:
+       SubnetId:
+         Ref: subnetperfios27publicb
+       RouteTableId: 
+         Ref: PublicRouteTable
+ 
+
+   subnetGWperfios27publicbRouteTableAssociation:
+     Type: AWS::EC2::SubnetRouteTableAssociation
+     Properties:
+       SubnetId:
+         Ref: subnetGWperfios27publicb 
+       RouteTableId: 
+         Ref: PublicRouteTable
+
+   
+   subnetwebperfios27privatebRouteTableAssociation:
+     Type: AWS::EC2::SubnetRouteTableAssociation
+     Properties:
+       SubnetId:
+         Ref: subnetwebperfios27privateb 
+       RouteTableId: 
+         Ref: PrivateRouteTable
+
+
+   
+   subnetappperfios27privatebRouteTableAssociation:
+     Type: AWS::EC2::SubnetRouteTableAssociation
+     Properties:
+       SubnetId:
+         Ref: subnetappperfios27privateb 
+       RouteTableId: 
+         Ref: PrivateRouteTable
+
+   
+
+   subnetdbperfios27privatebRouteTableAssociation:
+     Type: AWS::EC2::SubnetRouteTableAssociation
+     Properties:
+       SubnetId:
+         Ref: subnetdbperfios27privateb 
+       RouteTableId: 
+         Ref: PrivateRouteTable
+
+
+    
+   subnetnosqlperfios27privatebRouteTableAssociation:
+     Type: AWS::EC2::SubnetRouteTableAssociation
+     Properties:
+       SubnetId:
+         Ref: subnetnosqlperfios27privateb 
+       RouteTableId: 
+         Ref: PrivateRouteTable
+   
+   
+   
+
+  

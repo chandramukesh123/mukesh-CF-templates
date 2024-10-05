@@ -1,0 +1,273 @@
+Resources:
+
+#Creating Customer gateways to different ISP's
+  
+  CustomerGatewayPerfios16K2TATA: 
+    Type: AWS::EC2::CustomerGateway
+    Properties: 
+        Type: ipsec.1
+        BgpAsn: 65001
+        IpAddress: 121.242.131.34
+        Tags:
+        - Key: Name
+          Value: customer-gateway-perfios-16-K2-TATA
+
+  
+  CustomerGatewayPerfios16FTLSpectra: 
+    Type: AWS::EC2::CustomerGateway
+    Properties: 
+        Type: ipsec.1
+        BgpAsn: 65001
+        IpAddress: 180.151.72.42
+        Tags:
+        - Key: Name
+          Value: customer-gateway-perfios-16-FTL-Spectra
+   
+   
+  CustomerGatewayPerfios16K2ACT1: 
+    Type: AWS::EC2::CustomerGateway
+    Properties: 
+        Type: ipsec.1
+        BgpAsn: 65001
+        IpAddress: 106.51.74.163
+        Tags:
+        - Key: Name
+          Value: customer-gateway-perfios-16-K2-ACT1 
+
+
+    
+  CustomerGatewayPerfios16K2ACT2: 
+    Type: AWS::EC2::CustomerGateway
+    Properties: 
+        Type: ipsec.1
+        BgpAsn: 65001
+        IpAddress: 202.83.19.46
+        Tags:
+        - Key: Name
+          Value: customer-gateway-perfios-16-K2-ACT2
+
+
+#Presently this is not in use
+#  CustomerGatewayPerfios16K2Spectranet: 
+#    Type: AWS::EC2::CustomerGateway
+#    Properties: 
+#        Type: ipsec.1
+#        BgpAsn: 65001
+#        IpAddress: 180.151.37.131
+#        Tags:
+#        - Key: Name
+#          Value: customer-gateway-perfios-16-K2-spectranet 
+ 
+
+#Creating Virtual Private Gateway  
+
+  VPGPerfios16: 
+    Type: AWS::EC2::VPNGateway
+    Properties: 
+      Type: ipsec.1
+      Tags: 
+       - Key: Name
+         Value: vpg-perfios-16
+
+
+
+#Attaching Virtual Private Gateway to VPC, Here if we want to attach another vpc, we need to change VPC Id
+
+  AttachVpnGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: vpc-0a18a89e0cea29030 
+      VpnGatewayId:
+        Ref: VPGPerfios16
+
+
+
+#Creating site2site vpn connection to K2 TATA ISP
+ 
+  VpnPerfios16toK2TATA: 
+    Type: AWS::EC2::VPNConnection
+    Properties: 
+      Type: ipsec.1
+      StaticRoutesOnly: true
+      CustomerGatewayId: 
+        !Ref CustomerGatewayPerfios16K2TATA
+      VpnGatewayId: 
+          !Ref VPGPerfios16 
+      Tags:
+       - Key: Name
+         Value: vpn-perfios-16-to-K2-TATA
+
+
+
+#VPN connection Routing to specific Static IP's
+     
+  VpnPerfios16toK2TATAConnectionRoute1: 
+    Type: AWS::EC2::VPNConnectionRoute
+    Properties: 
+      DestinationCidrBlock: 192.168.20.0/22
+      VpnConnectionId: 
+        !Ref VpnPerfios16toK2TATA 
+
+  
+  VpnPerfios16toK2TATAConnectionRoute2: 
+    Type: AWS::EC2::VPNConnectionRoute
+    Properties: 
+      DestinationCidrBlock: 192.168.0.0/24
+      VpnConnectionId: 
+        !Ref VpnPerfios16toK2TATA 
+
+   
+  VpnPerfios16toK2TATAConnectionRoute3: 
+    Type: AWS::EC2::VPNConnectionRoute
+    Properties: 
+      DestinationCidrBlock: 192.168.8.0/24
+      VpnConnectionId: 
+        !Ref VpnPerfios16toK2TATA 
+
+
+#Creating site2site vpn for FTL Spectra
+
+  VpnPerfios16toFTLSpectra: 
+     Type: AWS::EC2::VPNConnection
+     Properties: 
+       Type: ipsec.1
+       StaticRoutesOnly: true
+       CustomerGatewayId: 
+         !Ref CustomerGatewayPerfios16FTLSpectra
+       VpnGatewayId: 
+         !Ref VPGPerfios16 
+       Tags:
+         - Key: Name
+           Value: vpn-perfios-16-to-FTL-Spectra
+
+
+#VPN connection routing to specific static IP's
+
+  VpnPerfios16toFTLSpectraConnectionRoute1: 
+    Type: AWS::EC2::VPNConnectionRoute
+    Properties: 
+      DestinationCidrBlock: 192.168.12.0/24
+      VpnConnectionId: 
+        !Ref VpnPerfios16toFTLSpectra 
+
+   
+#Creating site2site vpn for K2 ACT1
+   
+  VpnPerfios16toK2ACT1: 
+     Type: AWS::EC2::VPNConnection
+     Properties: 
+       Type: ipsec.1
+       StaticRoutesOnly: true
+       CustomerGatewayId: 
+          !Ref CustomerGatewayPerfios16K2ACT1
+       VpnGatewayId: 
+          !Ref VPGPerfios16 
+       Tags:
+         - Key: Name
+           Value: vpn-perfios-16-to-K2-ACT1
+
+
+#VPN connection routing to specific static IP's
+     
+  VpnPerfios16toK2ACT1ConnectionRoute1: 
+    Type: AWS::EC2::VPNConnectionRoute
+    Properties: 
+      DestinationCidrBlock: 192.168.0.0/24
+      VpnConnectionId: 
+        !Ref VpnPerfios16toK2ACT1 
+  
+  
+  VpnPerfios16toK2ACT1ConnectionRoute2: 
+    Type: AWS::EC2::VPNConnectionRoute
+    Properties: 
+      DestinationCidrBlock: 192.168.20.0/22
+      VpnConnectionId: 
+        !Ref VpnPerfios16toK2ACT1 
+  
+
+   
+  VpnPerfios16toK2ACT1ConnectionRoute3: 
+    Type: AWS::EC2::VPNConnectionRoute
+    Properties: 
+      DestinationCidrBlock: 192.168.8.0/24
+      VpnConnectionId: 
+        !Ref VpnPerfios16toK2ACT1 
+
+
+#Creating site2site vpn to K2 ACT2
+ 
+  VpnPerfios16K2ACT2: 
+     Type: AWS::EC2::VPNConnection
+     Properties: 
+       Type: ipsec.1
+       StaticRoutesOnly: true
+       CustomerGatewayId: 
+          !Ref CustomerGatewayPerfios16K2ACT2
+       VpnGatewayId: 
+          !Ref VPGPerfios16 
+       Tags:
+         - Key: Name
+           Value: vpn-perfios-16-to-K2-ACT2 
+
+
+
+#VPN connection routing to specific static IP's
+      
+  VpnPerfios16K2ACT2ConnectionRoute1: 
+    Type: AWS::EC2::VPNConnectionRoute
+    Properties: 
+      DestinationCidrBlock: 192.168.0.0/24
+      VpnConnectionId: 
+        !Ref VpnPerfios16K2ACT2 
+
+
+
+  VpnPerfios16K2ACT2ConnectionRoute2: 
+    Type: AWS::EC2::VPNConnectionRoute
+    Properties: 
+      DestinationCidrBlock: 192.168.20.0/22
+      VpnConnectionId: 
+        !Ref VpnPerfios16K2ACT2 
+
+
+# Presently this is not in use
+#Creating site2site vpn to K2 Spectra
+ 
+#  VpnPerfios16toK2Spectra: 
+#     Type: AWS::EC2::VPNConnection
+#     Properties: 
+#       Type: ipsec.1
+#       StaticRoutesOnly: true
+#       CustomerGatewayId: 
+#          !Ref CustomerGatewayPerfios16K2Spectranet
+#       VpnGatewayId: 
+#          !Ref VPGPerfios16 
+#       Tags:
+#         - Key: Name
+#           Value: vpn-perfios-16-to-K2-Spectra 
+
+
+#VPN connection routing to specific static IP's
+    
+#  VpnPerfios16toK2SpectraConnectionRoute1: 
+#    Type: AWS::EC2::VPNConnectionRoute
+#    Properties: 
+#      DestinationCidrBlock: 192.168.0.0/24
+#      VpnConnectionId: 
+#        !Ref VpnPerfios16toK2Spectra 
+
+
+   
+#  VpnPerfios16toK2SpectraConnectionRoute2: 
+#    Type: AWS::EC2::VPNConnectionRoute
+#    Properties: 
+#      DestinationCidrBlock: 192.168.20.0/22
+#      VpnConnectionId: 
+#        !Ref VpnPerfios16toK2Spectra 
+
+
+
+
+
+
+
